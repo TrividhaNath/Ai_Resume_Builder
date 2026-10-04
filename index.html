@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resume Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root,:root[data-theme="dark"]{--desk:#0d0f1a;--panel:#151829;--ink:#eceefa;--mute:#9aa0bd;--line:#282d47;--accent:#9aa8ff;--mark:#ffe27a;--markline:#e0a800;--good:#6fe0b0;--warn:#ff8f7a;--glow:rgba(120,130,255,.16)}
+:root[data-theme="light"]{--desk:#e8ebf2;--panel:#f7f8fb;--ink:#1c2433;--mute:#5d6778;--line:#d3d9e2;--accent:#2f4bd8;--good:#1f7a55;--warn:#b4472a;--glow:rgba(47,75,216,.08)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--desk);color:var(--ink);font:15px/1.45 Figtree,system-ui,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:20px;padding:16px 20px;max-width:1280px;margin:0 auto}
+.left{display:flex;flex-direction:column;min-height:0;min-width:0}
+.tabs{display:flex;gap:2px;flex:none;border-bottom:1px solid var(--line);margin-bottom:12px}
+.tabs button{all:unset;cursor:pointer;padding:8px 12px;font-weight:600;font-size:13.5px;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.tabs .cnt{background:var(--warn);color:#fff;border-radius:9px;font-size:11px;min-width:17px;height:17px;display:inline-grid;place-items:center;padding:0 4px}
+.paper{position:relative;flex:1;min-height:0;overflow:hidden;background:#fff;color:#1a1a1a;width:100%;max-width:800px;align-self:center;padding:34px 48px;font:15px/1.55 "Source Serif 4",Georgia,serif;box-shadow:0 1px 2px rgba(0,0,0,.12),0 12px 32px -12px rgba(20,30,50,.25)}
+.paper h1{font-size:30px;line-height:1.1;margin:0 0 3px}
+.paper .sub{margin:0;color:#444;font-size:14px}.paper .contact{margin:6px 0 0;font:12px Figtree,sans-serif;color:#555}
+.paper h2{font:700 12.5px Figtree,sans-serif;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid #1a1a1a;padding-bottom:3px;margin:20px 0 6px}
+.row{display:flex;justify-content:space-between;gap:12px;margin-top:12px}.row b{font-weight:600}.row span{color:#555;white-space:nowrap}.row em{color:#444}
+ul{margin:4px 0 0;padding-left:18px}li.b{margin:4px 0}
+.skills p{margin:6px 0}
+li.flag .t{background:linear-gradient(transparent 55%,var(--mark) 55%);cursor:pointer}
+li.flag.open .t{background:var(--mark)}
+.mark{all:unset;cursor:pointer;display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;border-radius:50%;background:var(--warn);color:#fff;font:700 11px Figtree,sans-serif;vertical-align:1px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.note{position:absolute;left:20px;right:20px;bottom:20px;padding:14px 18px 12px;background:#fffbea;border:1px solid #ecd27a;border-left:4px solid var(--markline);box-shadow:0 8px 24px -8px rgba(0,0,0,.3);font:14px/1.45 Figtree,sans-serif;color:#2b2b2b;animation:open .18s ease-out}
+@keyframes open{from{opacity:0;transform:translateY(6px)}}
+.note .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.note h4{margin:0 0 2px;font:700 12px Figtree;color:#8a5b00}.note p{margin:0}
+.note .crit{display:inline-block;background:#1a1a1a;color:#fff;font:600 11px Figtree;padding:1px 8px;border-radius:3px;margin-bottom:8px}
+.note .foot{font-size:12px;color:#6b6b6b;margin-top:8px}
+.note .x{all:unset;cursor:pointer;position:absolute;top:8px;right:12px;font-size:18px;color:#777}
+aside{display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--panel);border:1px solid var(--line);padding:18px}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex:none}
+.seg button{all:unset;flex:1;text-align:center;padding:7px 4px;cursor:pointer;font-weight:600;font-size:13.5px;color:var(--mute);border-right:1px solid var(--line)}
+.seg button:last-child{border:0}.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.hero{flex:none;transition:opacity .2s}.busy .hero,.busy .sub-body{opacity:.4}
+.big{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px}
+.big .n{font:600 64px/1 "Source Serif 4",serif;letter-spacing:-.02em}.big .of{color:var(--mute);font-size:17px}
+.verdict{font-weight:600;font-size:15.5px;margin:0}.verdict.bad{color:var(--warn)}.verdict.ok{color:var(--good)}
+.ruler{position:relative;height:32px;margin:12px 0 0}
+.ruler .track,.ruler .fill{position:absolute;left:0;top:18px;height:6px;border-radius:3px}.ruler .track{right:0;background:var(--line)}
+.ruler .fill{background:var(--ink);transition:width .5s}
+.ruler .cut{position:absolute;top:10px;width:2px;height:22px;background:var(--accent);transition:left .5s}
+.ruler .cut i{position:absolute;top:-14px;left:-20px;font:600 11px Figtree;font-style:normal;color:var(--accent);white-space:nowrap}
+.stabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:14px 0 6px;flex:none}
+.stabs button{all:unset;cursor:pointer;padding:6px 10px;font-weight:600;font-size:13.5px;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px}
+.stabs button[aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.sub-body{flex:1;min-height:0;overflow:hidden}
+.sub2{color:var(--mute);font-size:13px;margin:6px 0 0}
+.crit-list,.fixlist{list-style:none;padding:0;margin:0}
+.crit-list li{display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px 10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.crit-list .v{font:600 15px "Source Serif 4",serif}
+.ticks{grid-column:1/-1;display:flex;gap:3px}.ticks s{flex:1;height:5px;background:var(--line);border-radius:1px}.ticks s.on{background:var(--ink)}
+.crit-list li.weak .ticks s.on{background:var(--warn)}.crit-list li.weak .nm::after{content:" weakest";color:var(--warn);font-size:12px;font-weight:600}
+.fixlist button{all:unset;display:block;width:100%;cursor:pointer;padding:7px 0;border-bottom:1px dashed var(--line)}
+.fixlist button:hover .ft{text-decoration:underline}
+.fixlist .ft,.fixlist .fs{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fixlist .ft{font-weight:600;font-size:13.5px}.fixlist .fs{color:var(--mute);font-size:12.5px}
+.err{color:var(--warn);font-size:13px}
+.mnav{display:none}
+@media (max-width:900px){
+ .app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;padding:10px;gap:8px}
+ .app[data-view=resume] aside,.app[data-view=review] .left{display:none}
+ .mnav{display:flex;gap:6px}.mnav button{all:unset;flex:1;text-align:center;padding:10px;font-weight:600;border:1px solid var(--line);border-radius:6px;background:var(--panel);cursor:pointer}
+ .mnav button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+ .tabs{overflow:hidden}.tabs button{padding:8px 8px;font-size:12.5px}
+ .paper{padding:18px 16px;font-size:13.5px}.paper h1{font-size:23px}.paper h2{margin-top:14px}
+ .note .cols{grid-template-columns:1fr;gap:8px}.note{left:8px;right:8px;bottom:8px;font-size:13px}
+ .big .n{font-size:52px}
+}
+@media print{html,body{overflow:visible;height:auto}aside,.tabs,.mnav,.mark,.note{display:none}li.flag .t{background:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+body{background:radial-gradient(900px 520px at 28% 42%,var(--glow),transparent 70%),var(--desk)}
+.paper{background:#fbfbfd;border-radius:4px;box-shadow:0 0 0 1px rgba(255,255,255,.05),0 24px 60px -18px rgba(0,0,0,.65)}
+aside{border-radius:14px;background:var(--panel)}
+.seg{border-radius:10px;padding:3px;gap:3px;border:1px solid var(--line);background:var(--desk)}
+.seg button{border:0;border-radius:8px;padding:7px 4px}
+.seg button[aria-pressed=true]{background:var(--accent);color:#10142a}
+.tabs button[aria-selected=true],.stabs button[aria-selected=true]{border-color:var(--accent)}
+.big .n{color:var(--ink)}.verdict.bad{color:var(--warn)}
+.ruler .fill{background:var(--accent)}.ruler .cut{background:var(--good)}.ruler .cut i{color:var(--good)}
+.ticks s.on{background:var(--accent)}
+.hint{margin:6px 0 0;color:var(--mute);font-size:13px}.hint b{color:var(--ink);font-weight:600}
+.themebtn{margin-left:auto;cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:8px;width:32px;height:30px;line-height:1;margin-bottom:4px;color:var(--mute);font-size:15px}
+.themebtn:hover{color:var(--ink)}
+.mnav button[aria-pressed=true]{background:var(--accent);color:#10142a}
+.mnav button{border-radius:10px}
+.note{border-radius:8px}
+
+:root,:root[data-theme="dark"]{--paper:#1a1e32;--pink:#eceefa;--pmute:#aab0cc;--prule:#5a6180;--pmark:rgba(255,226,122,.34);--pmarkon:rgba(255,226,122,.5)}
+:root[data-theme="light"]{--paper:#fff;--pink:#1a1a1a;--pmute:#555;--prule:#1a1a1a;--pmark:#ffe27a;--pmarkon:#ffe27a}
+.paper{background:var(--paper);color:var(--pink)}
+.paper .sub{color:var(--pmute)}.paper .contact,.row span,.row em{color:var(--pmute)}
+.paper h2{border-bottom-color:var(--prule)}
+li.flag .t{background:linear-gradient(transparent 55%,var(--pmark) 55%)}
+li.flag.open .t{background:var(--pmarkon)}
+:root[data-theme="dark"] .note{background:#272c48;border-color:#3a4166;border-left-color:#ffd76a;color:var(--ink)}
+:root[data-theme="dark"] .note h4{color:#ffd76a}
+:root[data-theme="dark"] .note .crit{background:var(--accent);color:#10142a}
+:root[data-theme="dark"] .note .foot,:root[data-theme="dark"] .note .x{color:var(--mute)}
+.tabs{gap:0}.tabs button{padding:8px 8px;gap:5px}.themebtn{flex:none;margin-left:6px}
+@media print{.paper{background:#fff;color:#1a1a1a;box-shadow:none}.paper *{color:inherit!important}li.flag .t{background:none!important}}
+
+:root,:root[data-theme="dark"]{--desk:#0b0b0b;--panel:#171717;--ink:#f4f4f4;--mute:#9b9b9b;--line:#2c2c2c;--accent:#ff5a6e;--warn:#ffa94d;--good:#6fe0b0;--glow:rgba(255,90,110,.06);--paper:#1b1b1b;--pink:#f1f1f1;--pmute:#a8a8a8;--prule:#4a4a4a}
+.paper{border-radius:22px;padding-left:52px;padding-right:52px}
+:root[data-theme="dark"] .paper{box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px #000}
+aside{border-radius:22px}
+.tabs{border-bottom:0;gap:4px}
+.tabs button{border-radius:999px;margin-bottom:0;padding:7px 11px;font-size:13px}
+.tabs button[aria-selected=true],.stabs button[aria-selected=true]{background:var(--ink);color:var(--desk);border-color:transparent}
+.stabs{border-bottom:0;gap:4px}.stabs button{border-radius:999px;margin-bottom:0;padding:6px 12px}
+.seg,.seg button{border-radius:999px}
+.seg button[aria-pressed=true],.mnav button[aria-pressed=true]{background:var(--ink);color:var(--desk)}
+.mnav button{border-radius:999px}
+.themebtn{border-radius:50%;width:32px;height:32px;background:var(--panel)}
+.note{border-radius:16px}
+:root[data-theme="dark"] .note{background:#262626;border-color:#383838;border-left-color:#ffd76a}
+:root[data-theme="dark"] .note .crit{background:var(--accent);color:#1a0a0c}
+:root[data-theme="dark"] .mark,:root[data-theme="dark"] .cnt{color:#1a1204}
+.ruler .fill{background:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app" id="app" data-view="resume">
+  <div class="left"><div class="tabs" role="tablist" id="tabs"></div><main class="paper" id="resume"></main></div>
+  <aside id="panel"></aside>
+  <nav class="mnav" id="mnav"></nav>
+</div>
+<script>
+/* ---------- Swap this to connect the real scoring service ----------
+   POST { resume, company_type } -> { score, cutoff, meets_cutoff, criteria_scores, fixes[] } */
+const SCORING_URL = null;
+
+/* ---------- Mock resume (every bullet has a unique id) ---------- */
+const RESUME = {
+  name:"Alex Carter", subtitle:"B.Tech, Computer Science and Engineering",
+  contact:"Bengaluru, India  |  alex.carter@example.com  |  github.com/alexcarter  |  linkedin.com/in/alexcarter",
+  sections:[
+    {title:"Education",entries:[{head:"Example Institute of Technology",sub:"B.Tech, Computer Science and Engineering",date:"2022 – 2026",bullets:[{id:"edu-1-b1",text:"CGPA: 8.1 / 10. Relevant coursework: Data Structures, Operating Systems, Databases, Machine Learning."}]}]},
+    {title:"Experience",entries:[
+      {head:"Software Intern",sub:"Brightlane Systems",date:"May – Jul 2025",bullets:[
+        {id:"exp-1-b1",text:"Built REST endpoints in Flask for an internal ticketing tool used by the support team."},
+        {id:"exp-1-b2",text:"Worked on improving the speed of the search feature."}]},
+      {head:"Teaching Assistant",sub:"Department of Computer Science",date:"Jan – Apr 2025",bullets:[
+        {id:"exp-2-b1",text:"Helped students with lab assignments and grading in Data Structures."}]}]},
+    {title:"Projects",entries:[
+      {head:"Campus Ride Share",sub:"React, Node.js, MongoDB",date:"2025",bullets:[
+        {id:"proj-1-b1",text:"Built a ride-sharing web app using React and Node.js."},
+        {id:"proj-1-b2",text:"Designed a matching algorithm that groups riders by route and time window using Haversine distance."}]},
+      {head:"Weather Station Monitor",sub:"Python, Raspberry Pi, Grafana",date:"2024",bullets:[
+        {id:"proj-2-b1",text:"Trained a model on sensor readings to predict rainfall."},
+        {id:"proj-2-b2",text:"Made a Grafana dashboard so users can view the readings."}]}]},
+    {title:"Skills",skills:[["Languages","Python, Java, JavaScript, SQL"],["Frameworks","React, Flask, Node.js"],["Tools","Git, Docker, Linux"]]},
+    {title:"Leadership & Activities",tab:"Leadership",entries:[{head:"Coordinator",sub:"Coding Club",date:"2023 – 2025",bullets:[{id:"lead-1-b1",text:"Led a team of students organising weekly coding contests and workshops."}]}]},
+    {title:"Achievements",entries:[{head:"",bullets:[{id:"ach-1-b1",text:"Finalist, inter-college hackathon 2024 (team of four)."}]}]}
+  ]
+};
+
+/* ---------- Mock scoring service (replace with real call) ---------- */
+const F = {
+ "proj-1-b1":{criterion:"Impact",issue:"You tell me what you built, but not why it mattered.",suggestion:"If real people used the app or it saved them time, say so. Only add a result that is actually true."},
+ "exp-1-b2":{criterion:"Clarity",issue:"“Worked on improving” is vague. I can't tell what you did or what changed.",suggestion:"Say what made search slow and what you changed. If you measured the before and after, include it."},
+ "proj-2-b1":{criterion:"Depth",issue:"This says you trained a model, but not how you judged whether it worked.",suggestion:"Mention how much data you had, the model you chose and why, and how you evaluated it, using only what you really did."},
+ "exp-2-b1":{criterion:"Depth",issue:"“Helped with” hides your part in the work.",suggestion:"Say what you personally handled: how many students, which labs, what you graded or explained."},
+ "proj-2-b2":{criterion:"Impact",issue:"This describes the dashboard, not who it helps.",suggestion:"Who looks at it? If anyone has used it, or if you shared it, say that."},
+ "lead-1-b1":{criterion:"Impact",issue:"Leading a team is good, but I don't see what the team achieved.",suggestion:"Did the contests draw participants or run for a full term? Add the outcome if there was one."}
+};
+const MOCK = {
+ "FAANG":{score:7.8,cutoff:9.5,meets_cutoff:false,criteria_scores:{impact:6.8,skill_relevance:8.6,depth:7.1,clarity:8.2,completeness:8.3},ids:["proj-1-b1","exp-1-b2","proj-2-b1","exp-2-b1","proj-2-b2","lead-1-b1"]},
+ "Mid-size":{score:7.8,cutoff:8.0,meets_cutoff:false,criteria_scores:{impact:6.8,skill_relevance:8.6,depth:7.1,clarity:8.2,completeness:8.3},ids:["proj-1-b1","exp-1-b2","proj-2-b1"]},
+ "Startup":{score:7.8,cutoff:7.0,meets_cutoff:true,criteria_scores:{impact:6.8,skill_relevance:8.6,depth:7.1,clarity:8.2,completeness:8.3},ids:["proj-1-b1"]}
+};
+async function scoreResume(resume, company){
+  if(SCORING_URL){
+    const r=await fetch(SCORING_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({resume,company_type:company})});
+    if(!r.ok) throw new Error("Scoring service returned "+r.status);
+    return r.json();
+  }
+  await new Promise(r=>setTimeout(r,450));
+  const m=MOCK[company];
+  return {score:m.score,cutoff:m.cutoff,meets_cutoff:m.meets_cutoff,criteria_scores:m.criteria_scores,fixes:m.ids.map(id=>({bullet_id:id,...F[id]}))};
+}
+
+/* ---------- State + rendering ---------- */
+const COMPANIES=["FAANG","Mid-size","Startup"];
+const LABELS={impact:"Impact",skill_relevance:"Skill relevance",depth:"Depth",clarity:"Clarity",completeness:"Completeness"};
+let company="FAANG", result=null, openId=null, busy=false, error=null, sec=0, sub="fixes", view="resume";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fixMap=()=>Object.fromEntries((result?.fixes||[]).map(f=>[f.bullet_id,f]));
+const bullets=s=>(s.entries||[]).flatMap(e=>e.bullets);
+const find=id=>{for(const s of RESUME.sections)for(const b of bullets(s))if(b.id===id)return b;};
+const secOf=id=>RESUME.sections.findIndex(s=>bullets(s).some(b=>b.id===id));
+
+function bulletHTML(b,fx){
+  if(!fx) return `<li class="b">${esc(b.text)}</li>`;
+  const open=openId===b.id;
+  return `<li class="b flag${open?" open":""}"><span class="t" data-open="${b.id}">${esc(b.text)}</span><button class="mark" data-open="${b.id}" aria-expanded="${open}" aria-label="See feedback on this bullet">!</button></li>`;
+}
+function noteHTML(f){
+  return `<div class="note" role="region" aria-label="Feedback"><button class="x" data-close aria-label="Close feedback">×</button>${f.criterion?`<span class="crit">${esc(f.criterion)}</span>`:""}
+  <div class="cols"><div><h4>Why this needs work</h4><p>${esc(f.issue)}</p></div><div><h4>Try this</h4><p>${esc(f.suggestion)}</p></div></div>
+  <p class="foot">Only add details that are true. A smaller honest claim beats an inflated one.</p></div>`;
+}
+function renderTabs(){
+  const fm=fixMap();
+  $("#tabs").innerHTML=RESUME.sections.map((s,i)=>{const n=bullets(s).filter(b=>fm[b.id]).length;
+    return `<button role="tab" aria-selected="${i===sec}" data-sec="${i}">${esc(s.tab||s.title)}${n?`<span class="cnt" aria-label="${n} to fix">${n}</span>`:""}</button>`}).join("")+`<button class="themebtn" data-theme-toggle aria-label="Switch light or dark theme">${document.documentElement.dataset.theme==="light"?"☾":"☀"}</button>`;
+  bind();
+}
+function renderResume(){
+  const fm=fixMap(), s=RESUME.sections[sec];
+  let h=`<h1>${esc(RESUME.name)}</h1><p class="sub">${esc(RESUME.subtitle)}</p><p class="contact">${esc(RESUME.contact)}</p><h2>${esc(s.title)}</h2>`;
+  if(s.skills) h+=`<div class="skills">${s.skills.map(([k,v])=>`<p><b>${esc(k)}:</b> ${esc(v)}</p>`).join("")}</div>`;
+  for(const e of s.entries||[]){
+    if(e.head) h+=`<div class="row"><div><b>${esc(e.head)}</b>${e.sub?` <em>– ${esc(e.sub)}</em>`:""}</div>${e.date?`<span>${esc(e.date)}</span>`:""}</div>`;
+    h+=`<ul>${e.bullets.map(b=>bulletHTML(b,fm[b.id])).join("")}</ul>`;
+  }
+  if(openId&&fm[openId]&&secOf(openId)===sec) h+=noteHTML(fm[openId]);
+  $("#resume").innerHTML=h; renderTabs(); bind();
+}
+function renderPanel(){
+  const p=$("#panel");
+  const seg=`<div class="seg" role="group" aria-label="Target company type">${COMPANIES.map(c=>`<button data-co="${c}" aria-pressed="${c===company}">${c}</button>`).join("")}</div>`;
+  if(error){p.innerHTML=seg+`<p class="err" role="alert">${esc(error)} Check that the scoring service is running, then pick a target again.</p>`;return bind();}
+  if(!result){p.innerHTML=seg+`<p class="sub2" style="margin-top:20px">Reading your resume…</p>`;return bind();}
+  const r=result, gap=Math.max(0,r.cutoff-r.score), pct=v=>Math.min(100,v/10*100);
+  const crit=Object.entries(r.criteria_scores), min=Math.min(...crit.map(c=>c[1]));
+  const fixes=r.fixes.filter(f=>find(f.bullet_id));
+  const body=sub==="criteria"
+   ?`<ul class="crit-list">${crit.map(([k,v])=>`<li class="${v===min?"weak":""}"><span class="nm">${LABELS[k]||k}</span><span class="v">${v.toFixed(1)}</span><div class="ticks" aria-hidden="true">${Array.from({length:10},(_,i)=>`<s class="${i<Math.round(v)?"on":""}"></s>`).join("")}</div></li>`).join("")}</ul>`
+   :(fixes.length?`<ul class="fixlist">${fixes.map(f=>`<li><button data-jump="${f.bullet_id}"><span class="ft">${f.criterion?esc(f.criterion)+": ":""}${esc(f.issue)}</span><span class="fs">${esc(find(f.bullet_id).text)}</span></button></li>`).join("")}</ul>`:`<p class="sub2">Nothing flagged. Nice work.</p>`);
+  p.className=busy?"busy":"";
+  p.innerHTML=seg+`<div class="hero"><div class="big"><span class="n">${r.score.toFixed(1)}</span><span class="of">/ 10</span></div>
+  ${r.meets_cutoff?`<p class="verdict ok">Clears the ${company} bar of ${r.cutoff.toFixed(1)}</p>`:`<p class="verdict bad">${gap.toFixed(1)} points to go for ${company}</p>`}
+  <p class="hint">Strongest area: <b>${LABELS[crit.reduce((a,c)=>c[1]>a[1]?c:a)[0]]}</b>. Weakest: <b>${LABELS[crit.reduce((a,c)=>c[1]<a[1]?c:a)[0]]}</b>.</p><div class="ruler" aria-hidden="true"><div class="track"></div><div class="fill" style="width:${pct(r.score)}%"></div><div class="cut" style="left:${pct(r.cutoff)}%"><i style="${pct(r.cutoff)>85?"left:-40px":""}">${company} ${r.cutoff.toFixed(1)}</i></div></div></div>
+  <div class="stabs" role="tablist"><button role="tab" aria-selected="${sub==="fixes"}" data-sub="fixes">To fix (${fixes.length})</button><button role="tab" aria-selected="${sub==="criteria"}" data-sub="criteria">Score breakdown</button></div>
+  <div class="sub-body">${body}</div>`;
+  bind();
+}
+function renderNav(){
+  $("#mnav").innerHTML=`<button data-view="resume" aria-pressed="${view==="resume"}">Resume</button><button data-view="review" aria-pressed="${view==="review"}">Score &amp; fixes</button>`;
+  $("#app").dataset.view=view; bind();
+}
+function bind(){
+  const on=(q,f)=>document.querySelectorAll(q).forEach(b=>b.onclick=()=>f(b));
+  on("[data-co]",b=>{company=b.dataset.co;openId=null;load();});
+  on("[data-sec]",b=>{sec=+b.dataset.sec;openId=null;renderResume();});
+  on("[data-sub]",b=>{sub=b.dataset.sub;renderPanel();});
+  on("[data-view]",b=>{view=b.dataset.view;renderNav();});
+  on("[data-theme-toggle]",()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme==="light"?"dark":"light";renderTabs();});
+  on("[data-close]",()=>{openId=null;renderResume();});
+  on("[data-jump]",b=>{const id=b.dataset.jump;sec=secOf(id);openId=id;view="resume";renderNav();renderResume();});
+  on("[data-open]",b=>{const id=b.dataset.open;openId=openId===id?null:id;renderResume();});
+}
+async function load(){
+  busy=true;error=null;renderPanel();renderResume();
+  try{ result=await scoreResume(RESUME,company); }
+  catch(e){ result=null; error="Couldn't get a score."; }
+  busy=false;renderPanel();renderResume();
+}
+document.documentElement.dataset.theme="dark";
+renderNav();renderResume();load();
+</script>
+</body>
+</html>
